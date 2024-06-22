@@ -3,7 +3,14 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
+let config = {
+    filePath: '../../demo/file/basic.xls',
+    output: '../../demo/file/output'
+}
+
+
 const translate = async (text, targetLang) => {
+    return text;
     const url = `https://libretranslate.com/translate`;
     try {
         const response = await axios.post(url, {
@@ -14,7 +21,7 @@ const translate = async (text, targetLang) => {
         });
         return response.data.translatedText;
     } catch (error) {
-        console.error(`Error translating text: ${text}`, error);
+        console.error(`Error translating text: ${ text }`, error);
         return text; // Return original text if translation fails
     }
 };
@@ -63,7 +70,7 @@ const processSheet = async (sheetName, sheetData) => {
         }
 
         if (key1 && key2) {
-            const compositeKey = `${key1}.${key2}`;
+            const compositeKey = `${ key1 }.${ key2 }`;
             jsonCN[compositeKey] = chineseText;
             jsonTW[compositeKey] = twText || await translate(chineseText, 'zh-TW');
             jsonEN[compositeKey] = cnText || await translate(chineseText, 'en');
@@ -71,24 +78,29 @@ const processSheet = async (sheetName, sheetData) => {
         }
     }
 
+    const prefix = path.resolve(__dirname, config.output);
+
     const outputDirs = ['zh_CN', 'en_US', 'zh_TW'];
     outputDirs.forEach(dir => {
+        dir = path.resolve(prefix, dir);
         if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir);
+            fs.mkdirSync(dir, { recursive: true });
         }
     });
 
-    const outputPathCN = path.join('zh_CN', `${sheetName}.json`);
-    const outputPathEN = path.join('en_US', `${sheetName}.json`);
-    const outputPathTW = path.join('zh_TW', `${sheetName}.json`);
+    const outputPathCN = path.resolve(prefix, outputDirs[0], `${ sheetName }.json`);
+    const outputPathEN = path.resolve(prefix, outputDirs[1], `${ sheetName }.json`);
+    const outputPathTW = path.resolve(prefix, outputDirs[2], `${ sheetName }.json`);
 
     fs.writeFileSync(outputPathCN, JSON.stringify(jsonCN, null, 2), 'utf8');
     fs.writeFileSync(outputPathEN, JSON.stringify(jsonEN, null, 2), 'utf8');
     fs.writeFileSync(outputPathTW, JSON.stringify(jsonTW, null, 2), 'utf8');
 };
 
-export const main = async () => {
-    const filePath = path.join(__dirname, 'basic.xls');
+const main = async (conf) => {
+    // const filePath = path.join(__dirname, 'basic.xls');
+    config = conf;
+    const filePath = path.join(__dirname, config.filePath);
 
     const workbook = xlsx.readFile(filePath);
     const sheetNames = workbook.SheetNames;
@@ -101,3 +113,7 @@ export const main = async () => {
     }
 };
 
+// main(config);
+// module.exports = main;
+
+export default main;
