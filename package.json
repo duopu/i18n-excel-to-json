@@ -1,5 +1,5 @@
 {
-  "name": "i18n-translate-excel",
+  "name": "i18n-excel-to-json",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.js",
