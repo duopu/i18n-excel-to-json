@@ -87,7 +87,7 @@ const processSheet = async (sheetName, sheetData) => {
     fs.writeFileSync(outputPathTW, JSON.stringify(jsonTW, null, 2), 'utf8');
 };
 
-const main = async () => {
+export const main = async () => {
     const filePath = path.join(__dirname, 'basic.xls');
 
     const workbook = xlsx.readFile(filePath);
@@ -101,4 +101,3 @@ const main = async () => {
     }
 };
 
-main().catch(error => console.error(error));
