@@ -114,6 +114,6 @@ const main = async (conf) => {
 };
 
 // main(config);
-// module.exports = main;
+module.exports = main;
 
-export default main;
+// export default main;

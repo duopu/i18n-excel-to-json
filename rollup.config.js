@@ -6,11 +6,18 @@ import json from '@rollup/plugin-json';
 
 export default {
     input: 'src/index.js',
-    output: {
-        file: 'dist/bundle.js',
-        format: 'cjs',
-        sourcemap: true
-    },
+    output: [
+        {
+            file: 'dist/bundle.cjs.js',
+            format: 'cjs',
+            sourcemap: true
+        },
+        {
+            file: 'dist/bundle.esm.js', // ES Module 输出
+            format: 'es',
+            sourcemap: true
+        }
+    ],
     plugins: [
         resolve(),
         commonjs(),
