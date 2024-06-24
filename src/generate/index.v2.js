@@ -2,6 +2,7 @@ const xlsx = require('xlsx');
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
+const chineseToEnglish = require("./translate");
 
 let config = {
     filePath: '../../demo/file/basic.xls',
@@ -10,6 +11,7 @@ let config = {
 
 
 const translate = async (text, targetLang) => {
+    return await chineseToEnglish(text);
     return text;
     const url = `https://libretranslate.com/translate`;
     try {
