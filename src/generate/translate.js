@@ -1,58 +1,4 @@
-/*
-const axios = require('axios');
-
-const translate = async (text, targetLang) => {
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${ targetLang }&dt=t&q=${ encodeURIComponent(text) }`;
-    try {
-        const response = await axios.get(url);
-        if (response.status === 200 && response.data && response.data[0]) {
-            return response.data[0][0][0]; // 获取翻译结果
-        } else {
-            throw new Error('Translation failed.');
-        }
-    } catch (error) {
-        console.error(`Error translating text: ${ text }`, error);
-        return text; // 返回原文本
-    }
-};
-
-// 示例用法
-const main = async () => {
-    const textToTranslate = '你好';
-    const targetLang = 'en'; // 英语
-    const translation = await translate(textToTranslate, targetLang);
-    console.log(`翻译结果：${ translation }`);
-};
-
-main().catch(error => console.error(error));
-*/
-
-// import { translate } from '@vitalets/google-translate-api';
-// import { translate } from '@vitalets/google-translate-api';
-/*
-let translate = require('@vitalets/google-translate-api');
-
-function f() {
-
-    // const { text } = await translate.translate('Привет, мир! Как дела?', { to: 'en' });
-    translate.translate('hello world', { to: 'en' }).then(res => {
-        console.log('res', res)
-    }).catch(err => {
-        console.log('err', err)
-    });
-
-    // console.log(text) // => 'Hello World! How are you?'
-}
-
-f()
-*/
-
-
-const axios = require('axios');
-const cheerio = require('cheerio');
-
-
-const chineseToEnglish = async (query) => {
+const getTranslation = async (query, options = {}) => {
     let body = {
         "query": query,
         "from": "zh",
@@ -62,7 +8,8 @@ const chineseToEnglish = async (query) => {
         "qcSettings": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"],
         "needPhonetic": true,
         "domain": "common",
-        "milliTimestamp": new Date().getTime()
+        "milliTimestamp": new Date().getTime(),
+        ...options
     }
 
     return new Promise((resolve, reject) => {
@@ -125,7 +72,6 @@ async function getEventStream(response) {
                             // 提取特定的值
                             const value = parsedEvent.data;
                             if (value?.event === 'Translating') {
-                                // console.log('222222222222222', value.list[0].dst);
                                 return value.list[0].dst;
                             }
                         } catch (error) {
@@ -143,4 +89,7 @@ async function getEventStream(response) {
 //     console.log(res)
 // });
 
-module.exports = chineseToEnglish;
+module.exports = {
+    chineseToEnglish: (query) => getTranslation(query, { "from": "zh", "to": "en" }),
+    englishToChinese: (query) => getTranslation(query, { "from": "en", "to": "zh" }),
+};
